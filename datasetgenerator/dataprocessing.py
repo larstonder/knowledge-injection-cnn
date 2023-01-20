@@ -389,7 +389,8 @@ def create_dataset(filename, ratio, solution_num, iterations):
     if iterations > 1:
         multiple = True
 
-    sol_file = open(filename + ".csv", 'r')
+    import codecs
+    sol_file = codecs.open(filename + ".csv", 'rU', 'utf-16')
     reader = csv.reader(sol_file)
 
     test_sol_file = open("DS.PLS.A.SOL.B." + str(ratio) + "." + filename + ".txt", 'w')
