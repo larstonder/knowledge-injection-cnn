@@ -18,7 +18,7 @@ The PLS-7 is chosen as demonstrating example:
     Do the same to save the rows constraints propagation domains:  
     `python dataset_to_csv.py --filename "DS.PLS.A.UNIQUES.B.4.pls7_10k.txt" --partial-sols-filename "partial_solutions_10k_train.csv" --domains-type rows --domains-filename "rows_propagation_domains_train_10k.csv" --assignments-filename "assignments_10k_train.csv" --dim 7`  
     Repeat the two previous steps also for the test set:  
-    2) Do the same for the multiple deconstructions of 100 solutions pool (but use the same test set achived for the 10k 
+    2) Do the same for the multiple deconstructions of 100 solutions pool (but use the same test set achieved for the 10k 
     solutions pool). 
     `python datasetgenerator/dataprocessing.py -n pls7_100.csv --sol-num 100 --iter-num 100` 
     
@@ -26,8 +26,7 @@ The PLS-7 is chosen as demonstrating example:
 
 4) Train and test the models.
     1. Here is an example for the model-agnostic NN:  
-    `python main.py --dim 7 --train --test-num pls-7/model-agnostic/all-ts/run-1 --num-epochs 10000 --max-size 1000000 
-    --batch-size 2048 --num-sol 10k --model-type agnostic --validation-size 5000 --patience 10`  
+    `python main.py --dim 7 --train --test-num pls-7/model-agnostic/all-ts/run-1 --num-epochs 10000 --max-size 1000000 --batch-size 2048 --num-sol 10k --model-type agnostic --validation-size 5000 --patience 10`  
     2. Here is an example for a neural network trained with injection of the all constraints via the MSE regularization 
     method:  
     `python main.py --dim 7 --train --test-num pls-7/mse-loss/100-sols/full/run-1

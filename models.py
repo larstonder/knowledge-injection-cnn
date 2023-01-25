@@ -136,6 +136,7 @@ class MyModel(tf.keras.Model):
         X_tensor = tf.convert_to_tensor(X, dtype=tf.float32)
 
         # Keras signatures is serving default
+        print(self.model)
         infer = self.model.signatures["serving_default"]
         # Make inference
         pred_tensor = infer(X_tensor)
@@ -272,4 +273,5 @@ class MyModel(tf.keras.Model):
         history["loss"] = loss_history
 
         return history
+
 

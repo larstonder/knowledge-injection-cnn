@@ -5,9 +5,10 @@ Main program.
 """
 
 import os
+
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 from utility import PLSInstance, PLSSolver, random_assigner
-from models import MyModel
+from models import MyModel, PLSCNNModel
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -57,6 +58,8 @@ parser.add_argument("--leave-columns-domains", action="store_true", default=Fals
 parser.add_argument("--num-sol", type=str, default="10k",
                     help="Number of solutions from which the training set has been generated; thousands are expressed "
                          + "with k (for example 10000=10k).")
+parser.add_argument("--model", default="cnn", choices=["fnn", "cnn"],
+                    help="Choose the model architecture.")  # TODO: change default
 parser.add_argument("--model-type", default="agnostic", choices=["agnostic", "sbrinspiredloss", "negative", "binary"],
                     help="Choose the model type. 'agnostic' is the model-agnostic baseline. 'sbrinspiredloss', "
                          + "'negative' and 'binary' are relatively the mse, negative and binary-cross entropy versions"
@@ -77,7 +80,7 @@ args = parser.parse_args()
 # Problem dimension.
 DIM = int(args.dim)
 
-COLUMN_TYPES = [int() for _ in range(DIM**3)]
+COLUMN_TYPES = [int() for _ in range(DIM ** 3)]
 
 # Set training or test mode.
 TRAIN = args.train
@@ -178,7 +181,7 @@ print("Loading features from {}...".format(features_filepath))
 start = time.time()
 X = pd.read_csv(features_filepath, sep=',', header=None, nrows=MAX_SIZE, dtype=np.int8).values
 end = time.time()
-print("Elapsed {} seconds, {} GB required".format((end - start), X.nbytes / 10**9))
+print("Elapsed {} seconds, {} GB required".format((end - start), X.nbytes / 10 ** 9))
 print("Number of rows: {}".format(X.shape[0]))
 
 labels_filepath = "datasets/pls{}/assignments_{}_{}.csv".format(DIM, NUM_SOL, mode)
@@ -186,7 +189,7 @@ print("Loading labels from {}...".format(labels_filepath))
 start = time.time()
 Y = pd.read_csv(labels_filepath, sep=',', header=None, nrows=MAX_SIZE, dtype=np.int32).values
 end = time.time()
-print("Elapsed {} seconds, {} GB required".format((end - start), Y.nbytes / 10**9))
+print("Elapsed {} seconds, {} GB required".format((end - start), Y.nbytes / 10 ** 9))
 
 # Create penalties for the examples
 if MODEL_TYPE == 'agnostic' and not args.use_prop:
@@ -201,7 +204,7 @@ else:
     start = time.time()
     P = pd.read_csv(penalties_filepath, sep=',', header=None, nrows=MAX_SIZE, dtype=np.int8).values
 end = time.time()
-print("Elapsed {} seconds, {} GB required".format((end - start), P.nbytes / 10**9))
+print("Elapsed {} seconds, {} GB required".format((end - start), P.nbytes / 10 ** 9))
 
 # Remove validation samples from the training set
 if val_indexes is not None:
@@ -213,12 +216,20 @@ if val_indexes is not None:
 dataset = tf.data.Dataset.from_tensor_slices((X, Y, P)).shuffle(10000).batch(BATCH_SIZE)
 
 # Create the model
-model = MyModel(num_layers=2,
-                num_hidden=[512, 512],
-                input_shape=X.shape[1:],
-                output_dim=DIM ** 3,
-                method=MODEL_TYPE,
-                lmbd=args.lmbd)
+if args.model == "cnn":
+    model = PLSCNNModel(num_layers=2,
+                        num_hidden=[512, 512],
+                        input_shape=X.shape[1:],
+                        output_dim=DIM ** 3,
+                        method=MODEL_TYPE,
+                        lmbd=args.lmbd)
+else:
+    model = MyModel(num_layers=2,
+                    num_hidden=[512, 512],
+                    input_shape=X.shape[1:],
+                    output_dim=DIM ** 3,
+                    method=MODEL_TYPE,
+                    lmbd=args.lmbd)
 
 # Train model
 if TRAIN:
@@ -247,7 +258,7 @@ if TRAIN:
     exit(0)
 
 else:
-     model.model = tf.saved_model.load("models/{}".format(model_name))
+    model.model = tf.saved_model.load("models/{}".format(model_name))
 
 ################################################################################
 
@@ -334,7 +345,7 @@ for x, pred, y, d in zip(X, predict_val, Y, P):
         square = np.reshape(x, (DIM, DIM, DIM))
         pls = PLSInstance(n=DIM)
         pls.square = square.copy()
-        #assert pls.__check_constraints__(), "Constraints should be verified before assignment"
+        # assert pls.__check_constraints__(), "Constraints should be verified before assignment"
 
         # Make the random assignment
         rand_assignment = np.unravel_index(rand_assignment, shape=(DIM, DIM, DIM))
@@ -358,7 +369,7 @@ for x, pred, y, d in zip(X, predict_val, Y, P):
 
     # Save results checkpoint
     if count % 1000 == 0:
-      
+
         feasibility = list((feas_by_num_assigned / (tot_by_num_assigned + 1e-8))[1:])
 
         if not args.use_prop:
