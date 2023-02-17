@@ -5,7 +5,9 @@
 """
 
 import tensorflow as tf
-from utility import compute_feasibility_from_predictions, visualize
+
+from utility import compute_feasibility_from_predictions
+from tensorflow.keras.layers import Conv2D, Flatten, Dense, BatchNormalization, Reshape
 
 
 ########################################################################################################################
@@ -136,7 +138,6 @@ class MyModel(tf.keras.Model):
         X_tensor = tf.convert_to_tensor(X, dtype=tf.float32)
 
         # Keras signatures is serving default
-        print(self.model)
         infer = self.model.signatures["serving_default"]
         # Make inference
         pred_tensor = infer(X_tensor)
@@ -199,8 +200,7 @@ class MyModel(tf.keras.Model):
 
             # Training loop - using batches
             for x, y, p in train_ds:
-
-                y = tf.one_hot(y, depth=dim**3, dtype=tf.int8)
+                y = tf.one_hot(y, depth=dim ** 3, dtype=tf.int8)
                 y = tf.reshape(y, [y.shape[0], -1])
 
                 '''idx = 0
@@ -243,7 +243,7 @@ class MyModel(tf.keras.Model):
                     preds = self.model(x_val)
 
                     if use_prop:
-                       preds = preds * (1 - p_val)
+                        preds = preds * (1 - p_val)
 
                     feas = compute_feasibility_from_predictions(x_val, preds, dim)
                     print("Current feasibility: {} | Best feasibility: {}".format(feas, best_feas))
@@ -275,3 +275,29 @@ class MyModel(tf.keras.Model):
         return history
 
 
+class PLSCNNModel(MyModel):
+    def _define_model(self, input_shape):
+        model = tf.keras.Sequential()
+        model.add(Reshape((7, 7, 7), input_shape=(7 ** 3,)))
+
+        model.add(Conv2D(32, kernel_size=(7, 1), activation='relu', padding='same'))
+        model.add(Conv2D(32, kernel_size=(1, 7), activation='relu', padding='same'))
+        # model.add(MaxPooling2D((2, 2)))
+        model.add(BatchNormalization())
+
+        model.add(Conv2D(64, (3, 1), activation='relu', padding='same'))
+        model.add(Conv2D(64, (1, 3), activation='relu', padding='same'))
+        # model.add(MaxPooling2D((2, 2)))
+        model.add(BatchNormalization())
+
+        model.add(Conv2D(128, (1, 1), activation='relu', padding='same'))
+        model.add(BatchNormalization())
+
+        model.add(Flatten())
+        model.add(Dense(64, activation='relu'))
+        model.add(Dense(7 ** 3))
+
+        self.model = model
+
+    def call(self, inputs):
+        return self.model(inputs)

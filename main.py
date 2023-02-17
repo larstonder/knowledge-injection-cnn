@@ -217,8 +217,8 @@ dataset = tf.data.Dataset.from_tensor_slices((X, Y, P)).shuffle(10000).batch(BAT
 
 # Create the model
 if args.model == "cnn":
-    model = PLSCNNModel(num_layers=2,
-                        num_hidden=[512, 512],
+    model = PLSCNNModel(num_layers=3,
+                        num_hidden=[],
                         input_shape=X.shape[1:],
                         output_dim=DIM ** 3,
                         method=MODEL_TYPE,
