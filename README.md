@@ -13,12 +13,14 @@ The PLS-7 is chosen as demonstrating example:
     `python datasetgenerator/dataprocessing.py -n pls7_10k`  
     `DS.PLS.A.UNIQUES.B.4.pls7_10k.txt`: training set.  
     `DS.PLS.A.UNIQUES.L.4.pls7_10k.txt`: test set.  
-    Then convert them to csv file and save the variables' domains after constraints propagation. For the example:
+    2) Then convert them to csv file and save the variables' domains after constraints propagation. For the example:
     `python dataset_to_csv.py --filename "DS.PLS.A.UNIQUES.B.4.pls7_10k.txt" --partial-sols-filename "partial_solutions_10k_train.csv" --domains-type full --domains-filename "domains_train_10k.csv" --assignments-filename "assignments_10k_train.csv" --dim 7`  
-    Do the same to save the rows constraints propagation domains:  
+    3) Do the same to save the rows constraints propagation domains:  
     `python dataset_to_csv.py --filename "DS.PLS.A.UNIQUES.B.4.pls7_10k.txt" --partial-sols-filename "partial_solutions_10k_train.csv" --domains-type rows --domains-filename "rows_propagation_domains_train_10k.csv" --assignments-filename "assignments_10k_train.csv" --dim 7`  
-    Repeat the two previous steps also for the test set:  
-    2) Do the same for the multiple deconstructions of 100 solutions pool (but use the same test set achieved for the 10k 
+    4) Repeat the two previous steps also for the test set:
+       1) `python dataset_to_csv.py --filename "DS.PLS.A.UNIQUES.L.4.pls7_10k.txt" --partial-sols-filename "partial_solutions_10k_test.csv" --domains-type full --domains-filename "domains_test_10k.csv" --assignments-filename "assignments_10k_test.csv" --dim 7`
+       2) `python dataset_to_csv.py --filename "DS.PLS.A.UNIQUES.L.4.pls7_10k.txt" --partial-sols-filename "partial_solutions_10k_test.csv" --domains-type rows --domains-filename "rows_propagation_domains_test_10k.csv" --assignments-filename "assignments_10k_test.csv" --dim 7`
+    5) Do the same for the multiple deconstructions of 100 solutions pool (but use the same test set achieved for the 10k 
     solutions pool). 
     `python datasetgenerator/dataprocessing.py -n pls7_100.csv --sol-num 100 --iter-num 100` 
     

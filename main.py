@@ -76,6 +76,7 @@ parser.add_argument("--patience", default=10, type=int,
                          "feasibility after which training is stopped.")
 
 args = parser.parse_args()
+print(args)
 
 # Problem dimension.
 DIM = int(args.dim)
@@ -217,7 +218,7 @@ dataset = tf.data.Dataset.from_tensor_slices((X, Y, P)).shuffle(10000).batch(BAT
 
 # Create the model
 if args.model == "cnn":
-    model = PLSCNNModel(num_layers=3,
+    model = PLSCNNModel(num_layers=1,
                         num_hidden=[],
                         input_shape=X.shape[1:],
                         output_dim=DIM ** 3,
