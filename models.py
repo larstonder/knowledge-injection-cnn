@@ -5,6 +5,7 @@
 """
 
 import tensorflow as tf
+import numpy as np
 
 from utility import compute_feasibility_from_predictions
 from tensorflow.keras.layers import Conv2D, Flatten, Dense, BatchNormalization, Reshape
@@ -277,25 +278,17 @@ class MyModel(tf.keras.Model):
 
 class PLSCNNModel(MyModel):
     def _define_model(self, input_shape):
+        root = int(np.cbrt(input_shape[0]))
         model = tf.keras.Sequential()
-        model.add(Reshape((7, 7, 7), input_shape=(7 ** 3,)))
+        model.add(Reshape((root, root, root), input_shape=(root**3,)))
 
-        model.add(Conv2D(32, kernel_size=(7, 1), activation='relu', padding='same'))
-        model.add(Conv2D(32, kernel_size=(1, 7), activation='relu', padding='same'))
-        # model.add(MaxPooling2D((2, 2)))
-        model.add(BatchNormalization())
-
-        model.add(Conv2D(64, (3, 1), activation='relu', padding='same'))
-        model.add(Conv2D(64, (1, 3), activation='relu', padding='same'))
-        # model.add(MaxPooling2D((2, 2)))
-        model.add(BatchNormalization())
-
-        model.add(Conv2D(128, (1, 1), activation='relu', padding='same'))
+        model.add(Conv2D(16, kernel_size=(3, 3), activation='relu', padding='same'))
+        model.add(Conv2D(16, kernel_size=(3, 3), activation='relu', padding='same'))
         model.add(BatchNormalization())
 
         model.add(Flatten())
         model.add(Dense(64, activation='relu'))
-        model.add(Dense(7 ** 3))
+        model.add(Dense(root ** 3))
 
         self.model = model
 

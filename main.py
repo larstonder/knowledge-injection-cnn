@@ -226,7 +226,7 @@ if args.model == "cnn":
                         lmbd=args.lmbd)
 else:
     model = MyModel(num_layers=2,
-                    num_hidden=[512, 512],
+                    num_hidden=[16, 16],
                     input_shape=X.shape[1:],
                     output_dim=DIM ** 3,
                     method=MODEL_TYPE,
@@ -241,7 +241,7 @@ if TRAIN:
                           validation_set,
                           args.use_prop,
                           args.patience)
-
+    print("HISTORY: ", history)
     for name in history.keys():
         values = history[name]
 

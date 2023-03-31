@@ -11,20 +11,20 @@ The PLS-7 is chosen as demonstrating example:
 2)  Create the CSV file with the partial solutions - assignments pairs.  
     1) Create the file with uniques partial solutions - assignments pairs.  
     `python datasetgenerator/dataprocessing.py -n pls7_10k`  
-    `DS.PLS.A.UNIQUES.B.4.pls7_10k.txt`: training set.  
-    `DS.PLS.A.UNIQUES.L.4.pls7_10k.txt`: test set.  
+    `DS.PLS.A.UNIQUES.B.4.pls10_10k.txt`: training set.  
+    `DS.PLS.A.UNIQUES.L.4.pls10_10k.txt`: test set.  
     2) Then convert them to csv file and save the variables' domains after constraints propagation. For the example:
-    `python dataset_to_csv.py --filename "DS.PLS.A.UNIQUES.B.4.pls7_10k.txt" --partial-sols-filename "partial_solutions_10k_train.csv" --domains-type full --domains-filename "domains_train_10k.csv" --assignments-filename "assignments_10k_train.csv" --dim 7`  
+    `python dataset_to_csv.py --filename "DS.PLS.A.UNIQUES.B.4.pls10_10k.txt" --partial-sols-filename "partial_solutions_10k_train.csv" --domains-type full --domains-filename "domains_train_10k.csv" --assignments-filename "assignments_10k_train.csv" --dim 10`  
     3) Do the same to save the rows constraints propagation domains:  
-    `python dataset_to_csv.py --filename "DS.PLS.A.UNIQUES.B.4.pls7_10k.txt" --partial-sols-filename "partial_solutions_10k_train.csv" --domains-type rows --domains-filename "rows_propagation_domains_train_10k.csv" --assignments-filename "assignments_10k_train.csv" --dim 7`  
+    `python dataset_to_csv.py --filename "DS.PLS.A.UNIQUES.B.4.pls10_10k.txt" --partial-sols-filename "partial_solutions_10k_train.csv" --domains-type rows --domains-filename "rows_propagation_domains_train_10k.csv" --assignments-filename "assignments_10k_train.csv" --dim 10`  
     4) Repeat the two previous steps also for the test set:
-       1) `python dataset_to_csv.py --filename "DS.PLS.A.UNIQUES.L.4.pls7_10k.txt" --partial-sols-filename "partial_solutions_10k_test.csv" --domains-type full --domains-filename "domains_test_10k.csv" --assignments-filename "assignments_10k_test.csv" --dim 7`
-       2) `python dataset_to_csv.py --filename "DS.PLS.A.UNIQUES.L.4.pls7_10k.txt" --partial-sols-filename "partial_solutions_10k_test.csv" --domains-type rows --domains-filename "rows_propagation_domains_test_10k.csv" --assignments-filename "assignments_10k_test.csv" --dim 7`
+       1) `python dataset_to_csv.py --filename "DS.PLS.A.UNIQUES.L.4.pls10_10k.txt" --partial-sols-filename "partial_solutions_10k_test.csv" --domains-type full --domains-filename "domains_test_10k.csv" --assignments-filename "assignments_10k_test.csv" --dim 10`
+       2) `python dataset_to_csv.py --filename "DS.PLS.A.UNIQUES.L.4.pls10_10k.txt" --partial-sols-filename "partial_solutions_10k_test.csv" --domains-type rows --domains-filename "rows_propagation_domains_test_10k.csv" --assignments-filename "assignments_10k_test.csv" --dim 10`
     5) Do the same for the multiple deconstructions of 100 solutions pool (but use the same test set achieved for the 10k 
     solutions pool). 
-    `python datasetgenerator/dataprocessing.py -n pls7_100.csv --sol-num 100 --iter-num 100` 
+    `python datasetgenerator/dataprocessing.py -n pls10_100.csv --sol-num 100 --iter-num 100` 
     
-3) Move the files created in the previous steps in a directory named `datasets/pls7`.
+3) Move the files created in the previous steps in a directory named `datasets/pls10`.
 
 4) Train and test the models.
     1. Here is an example for the model-agnostic NN:  
@@ -44,14 +44,12 @@ The PLS-7 is chosen as demonstrating example:
     Test results are saved in a subdirectory of `plots`.
 
 5) Generate the solutions starting from an empty partial solutions.  
-    1. Generate `n` empty partial solutions:  
-    `empty_sols = numpy.zeros(shape=(n, 7**3), dtype=numpy.int8)`  
+    1. Generate `100` empty partial solutions:  
+    `empty_sols = numpy.zeros(shape=(100, 7**3), dtype=numpy.int8)`  
     `numpy.savetxt('solutions/pls7/empty_sols.txt', empty_sols, delimiter=',', fmt='%0.0f')`  
     2. Generate the solutions using the trained models:  
     `cd datasetgenerator`  
-    `python plstest.py ../solutions/pls7/empty_sols.csv --input-format bin --output-format bin --seed 1 
-    --search-strategy snail-dnn  --max-size 5000 --dnn-fstem ../models/--test-num pls-7/model-agnostic/all-ts/run-1 
-    --rm-rows-constraints --rm-columns-constraints >  ../solutions/pls7/model_agnostic_all_ts_no_prop.csv`  
+    `python3.7 plstest.py ../solutions/pls7/empty_sols.csv --input-format bin --output-format bin --seed 1 --search-strategy snail-dnn  --max-size 5000 --dnn-fstem ../models/ --test-num pls-7/model-cnn/all-ts/run-1 --rm-rows-constraints --rm-columns-constraints >  ../solutions/pls7/model_cnn_all_ts_no_prop.csv`  
     3. To count the constraints violations use the `read_solutions_from_csv` method from `utility.py`.  
 
 

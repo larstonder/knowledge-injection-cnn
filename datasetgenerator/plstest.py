@@ -21,6 +21,7 @@ import argparse
 import math
 import gzip
 import numpy as np
+import numpy
 import tensorflow as tf
 import os
 
